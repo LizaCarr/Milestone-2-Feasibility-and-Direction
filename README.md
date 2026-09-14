@@ -25,8 +25,29 @@ Access proof and throwaway experiment:
 | `holdout_predictions.csv` | 40-row holdout with both systems' predictions. |
 | `experiment_summary.json` | Metrics from the 13 September 2026 run. |
 
+What the throwaway test was for
+Kill assumption: mock-kiosk fields (scan result, scale delta, age-check flag, unexpected-bag flag, idle time, basket size, attendant-busy) can flag a freeze without using the label as an input.
+On a 20 freeze / 20 clear holdout:
+
+Hand rules: 19 / 20 hits, 0 false flags
+Logistic regression: 17 / 20 hits, 2 false flags
+
+The generator and the rules share an author. That circularity is stated in the PDF. This is not the official 40 + 40 charter test.
+Design direction
+Approach A (explicit rules + attendant log) is the semester spine. A learned model is on the bench until a later set is hand-coded from shift memory and labeled last.
+Scope this semester
+In scope: staged event file, first working loop to an attendant view, four charter tests on held-out staged events, updated risk register.
+Out of scope: live POS, face video, theft prediction, replacing the attendant, a production app, any claim that a store agreed to pilot this.
+Charter success tests (still targets)
+
+At least 34 / 40 labeled freezes flagged (no more than 6 misses).
+No more than 8 false flags in 40 non-freeze events.
+Median inject-to-log time at or under 3 seconds over 20 injected freezes.
+Zero real customer names, phones, or loyalty IDs in submitted materials.
 ### How to rerun
 
 ```bash
 python3 -m pip install pandas scikit-learn numpy
 python3 feasibility_experiment.py
+
+
