@@ -1,0 +1,17 @@
+{
+  "watcher": {
+    "cases": 8,
+    "passed": 8,
+    "baseline": "8/8"
+  },
+  "scorer": {
+    "cases": 8,
+    "passed": 8,
+    "baseline": "8/8"
+  },
+  "alert": {
+    "cases": 6,
+    "passed": 6,
+    "baseline": "6/6"
+  }
+}
