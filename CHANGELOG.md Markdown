@@ -1,0 +1,39 @@
+# Change log
+
+Elizabeth Carrillo · ITAI 4376 · Option C · team of one
+
+## 2026-10-27 — subsystems split out of the one script
+
+What changed. The September feasibility script did watcher, scorer, and alert in one file. The blueprint interface in section 7 is three contracts. I split them into watcher.py, scorer.py, and alert.py.
+
+Why. This checkpoint asks for each subsystem tested alone before integration. One file cannot show that.
+
+Alternative. Leave the logic in feasibility_experiment.py and call the sections. Cost: no independent test, and a miss in the alert could not be separated from a miss in the scorer.
+
+## 2026-10-27 — idle threshold set at 60 seconds
+
+What changed. The watcher and the scorer treat idle_time of 60 or more as a stop. The September script used a shorter idle.
+
+Why. Bianca’s minute is the success line. A freeze that sits more than a minute is what backs the lane up. The three-second clock stays retired.
+
+Alternative. Keep a 3-second idle. Cost: the test would measure the clock I retired, not her minute.
+
+## 2026-10-27 — age check is not a freeze
+
+What changed. An age-restricted item does not flag a freeze. Buttons dead, full freeze, idle past a minute, scale mismatch, and unexpected bag do.
+
+Why. An age check is a stop the attendant already handles. It is not a frozen register. Scoring it as a freeze would inflate hits on events that are not the problem.
+
+Alternative. Flag age check as a freeze. Cost: false flags on a normal control the store already runs.
+
+## 2026-10-27 — alert refuses a freeze with no lane
+
+What changed. make_alert returns nothing if the lane is missing. It does not invent a lane number.
+
+Why. Blueprint section 7. A freeze with no lane number is not sent. It is logged.
+
+Alternative. Send “Lane ?”. Cost: an attendant walks to no lane.
+
+## Not a deviation
+
+Option C, student proposed, Bianca as outside owner, no live register, no customer fields in the alert. Those stayed.
