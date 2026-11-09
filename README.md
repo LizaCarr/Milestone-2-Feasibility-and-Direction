@@ -1,7 +1,7 @@
 # Milestone-2-Feasibility-and-Direction
 # Team Carrillo — ITAI 4376
 
-Individual enrollment. Option C. Student proposed. Not an instructor assignment.
+ITAI 4376 Team Carrillo — self-checkout freeze log. Option C, student proposed, not a store pilot.
 
 This repository is coursework for a self-checkout freeze log. It is not a store pilot, not an HEB project, and it does not connect to live point-of-sale, cameras, or customer accounts.
 
