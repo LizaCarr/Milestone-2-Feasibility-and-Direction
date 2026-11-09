@@ -1,0 +1,16 @@
+"""Watcher. Sees that a lane has stopped answering. Does not reset the register."""
+
+def lane_stopped(row):
+    """True if the lane is not answering. Buttons dead, or idle past a minute."""
+    if not isinstance(row, dict):
+        return None
+    buttons = str(row.get("scan_result", "")).lower()
+    try:
+        idle = float(row.get("idle_time", 0) or 0)
+    except (TypeError, ValueError):
+        return None
+    if buttons in ("dead", "no_response", "frozen"):
+        return True
+    if idle >= 60:
+        return True
+    return False
