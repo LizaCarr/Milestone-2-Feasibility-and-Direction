@@ -1,0 +1,25 @@
+"""Scorer. One staged row in. Freeze or clear out, plus the field that fired."""
+
+def score_row(row):
+    """Return (label, field) or (None, reason) if the row will not parse."""
+    if not isinstance(row, dict):
+        return None, "not_a_row"
+    needed = ("scan_result", "scale_delta", "age_check", "unexpected_bag", "idle_time")
+    for key in needed:
+        if key not in row:
+            return None, f"missing_{key}"
+    try:
+        idle = float(row.get("idle_time") or 0)
+        scale = float(row.get("scale_delta") or 0)
+    except (TypeError, ValueError):
+        return None, "bad_number"
+    scan = str(row.get("scan_result", "")).lower()
+    if scan in ("dead", "no_response", "frozen"):
+        return "freeze", "scan_result"
+    if idle >= 60:
+        return "freeze", "idle_time"
+    if str(row.get("unexpected_bag", "")).lower() in ("1", "true", "yes"):
+        return "freeze", "unexpected_bag"
+    if abs(scale) >= 0.5:
+        return "freeze", "scale_delta"
+    return "clear", "none"
