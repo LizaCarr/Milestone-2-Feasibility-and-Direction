@@ -1,0 +1,11 @@
+"""Alert. One line for the attendant. Lane and time. Nothing else."""
+
+def make_alert(flag, lane, when):
+    """Freeze flag, lane number, timestamp. No lane number means do not send."""
+    if flag != "freeze":
+        return None
+    if lane is None or str(lane).strip() == "":
+        return None
+    if when is None or str(when).strip() == "":
+        return None
+    return f"Lane {lane} stopped at {when}"
