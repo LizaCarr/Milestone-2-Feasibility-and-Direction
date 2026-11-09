@@ -1,0 +1,46 @@
+"""Unit tests for each subsystem, run alone, before any integration."""
+import json
+from watcher import lane_stopped
+from scorer import score_row
+from alert import make_alert
+
+results = {}
+
+watcher_cases = [
+    ({"scan_result": "dead", "idle_time": 5}, True),
+    ({"scan_result": "ok", "idle_time": 90}, True),
+    ({"scan_result": "ok", "idle_time": 10}, False),
+    ({"scan_result": "frozen", "idle_time": 0}, True),
+    ({"scan_result": "ok", "idle_time": 59}, False),
+    ({"scan_result": "no_response", "idle_time": 1}, True),
+    ("not a row", None),
+    ({"scan_result": "ok", "idle_time": "nope"}, None),
+]
+w_pass = sum(1 for row, expected in watcher_cases if lane_stopped(row) == expected)
+results["watcher"] = {"cases": len(watcher_cases), "passed": w_pass, "baseline": f"{w_pass}/{len(watcher_cases)}"}
+
+scorer_cases = [
+    ({"scan_result": "dead", "scale_delta": 0, "age_check": 0, "unexpected_bag": 0, "idle_time": 1}, ("freeze", "scan_result")),
+    ({"scan_result": "ok", "scale_delta": 0, "age_check": 0, "unexpected_bag": 0, "idle_time": 70}, ("freeze", "idle_time")),
+    ({"scan_result": "ok", "scale_delta": 0.8, "age_check": 0, "unexpected_bag": 0, "idle_time": 5}, ("freeze", "scale_delta")),
+    ({"scan_result": "ok", "scale_delta": 0, "age_check": 0, "unexpected_bag": 1, "idle_time": 5}, ("freeze", "unexpected_bag")),
+    ({"scan_result": "ok", "scale_delta": 0.1, "age_check": 0, "unexpected_bag": 0, "idle_time": 12}, ("clear", "none")),
+    ({"scan_result": "ok", "scale_delta": 0, "age_check": 0, "idle_time": 5}, (None, "missing_unexpected_bag")),
+    ({"scan_result": "ok", "scale_delta": "x", "age_check": 0, "unexpected_bag": 0, "idle_time": 5}, (None, "bad_number")),
+    ("nope", (None, "not_a_row")),
+]
+s_pass = sum(1 for row, expected in scorer_cases if score_row(row) == expected)
+results["scorer"] = {"cases": len(scorer_cases), "passed": s_pass, "baseline": f"{s_pass}/{len(scorer_cases)}"}
+
+alert_cases = [
+    (("freeze", 3, "10:14"), "Lane 3 stopped at 10:14"),
+    (("clear", 3, "10:14"), None),
+    (("freeze", None, "10:14"), None),
+    (("freeze", "", "10:14"), None),
+    (("freeze", 2, None), None),
+    (("freeze", 7, "10:22:01"), "Lane 7 stopped at 10:22:01"),
+]
+a_pass = sum(1 for args, expected in alert_cases if make_alert(*args) == expected)
+results["alert"] = {"cases": len(alert_cases), "passed": a_pass, "baseline": f"{a_pass}/{len(alert_cases)}"}
+
+print(json.dumps(results, indent=2))
